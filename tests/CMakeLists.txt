@@ -7,5 +7,5 @@ set_target_properties(CatchMain PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED
 add_executable(ScoreTests ScoreTests.cpp)
 set_target_properties(CatchMain PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries(CatchMain PRIVATE ${PROJECT_NAME}-catch)
-target_link_libraries(ScoreTests PRIVATE ${PROJECT_NAME}-catch)
+target_link_libraries(CatchMain PRIVATE ${PROJECT_NAME}-catch ${PROJECT_NAME}-lib)
+target_link_libraries(ScoreTests PRIVATE ${PROJECT_NAME}-catch ${PROJECT_NAME}-lib)
