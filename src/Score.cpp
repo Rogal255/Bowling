@@ -1,33 +1,36 @@
 #include "Score.hpp"
 #include <iostream>
 
-void Score::addResult(uint8_t throwResult) {
-    if (frameEnd == false) {
-        result_[currentFrame_].first = throwResult;
-        frameEnd = true;
+void Score::addResult(size_t throwResult) {
+    if(throwResult > 10) {
+        throw std::invalid_argument("Score::addResult invalid argument");
+    }
+    if (frameEnd_ == false) {
+        result_[currentFrame_].first = static_cast<uint8_t>(throwResult);
+        frameEnd_ = true;
     } else {
-        result_[currentFrame_].second = throwResult;
-        frameEnd = false;
+        result_[currentFrame_].second = static_cast<uint8_t>(throwResult);
+        frameEnd_ = false;
         ++currentFrame_;
     }
 }
 
-uint16_t Score::getFinalScore() {
+uint16_t Score::getScore() {
     return 0;
 }
 
 std::string Score::resultsToString() {
     std::string str;
     for (uint8_t ture = 0; ture < currentFrame_; ++ture) {
-        if (ture == bonusTurn) {
-            if (result_[bonusTurn - 1].first + result_[bonusTurn - 1].second != maxOneThrowPoints_) {
+        if (ture == bonusTurn_) {
+            if (result_[bonusTurn_ - 1].first + result_[bonusTurn_ - 1].second != maxOneThrowPoints_) {
                 return str;
-            } else if (result_[bonusTurn - 1].first == maxOneThrowPoints_) {
-                    str += throwResultToString(bonusTurn, 1) + throwResultToString(bonusTurn, 2);
+            } else if (result_[bonusTurn_ - 1].first == maxOneThrowPoints_) {
+                    str += throwResultToString(bonusTurn_, 1) + throwResultToString(bonusTurn_, 2);
                     return str;
                 }
             else {
-                str += throwResultToString(bonusTurn, 1);
+                str += throwResultToString(bonusTurn_, 1);
                 return str;
             }
         }
@@ -35,16 +38,16 @@ std::string Score::resultsToString() {
         if (result_[ture].first != maxOneThrowPoints_) {
                 str += throwResultToString(ture, 2);
         }
-        if (ture == bonusTurn - 1) {
+        if (ture == bonusTurn_ - 1) {
             str += "||";
-        } else if (ture < bonusTurn) {
+        } else if (ture < bonusTurn_) {
             str += '|';
         }
         for (uint8_t ture = currentFrame_; ture < result_.size(); ++ture) {
             str += "  ";
-            if (ture == bonusTurn - 1) {
+            if (ture == bonusTurn_ - 1) {
                 str += "||";
-            } else if (ture < bonusTurn - 1) {
+            } else if (ture < bonusTurn_ - 1) {
                 str += '|';
             }
         }
@@ -62,7 +65,7 @@ std::string Score::throwResultToString(uint8_t ture, uint8_t throwInTurn) {
             return std::to_string(result_[ture].first);
         }
     } else {
-        if (result_[ture].second == maxOneThrowPoints_ && ture == bonusTurn) {
+        if (result_[ture].second == maxOneThrowPoints_ && ture == bonusTurn_) {
             return "X";
         }
         if (result_[ture].second == maxOneThrowPoints_) {
