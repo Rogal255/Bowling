@@ -3,7 +3,7 @@ project(Bowling)
 
 add_subdirectory(tests)
 
-set(SRC src/Bowls.cpp)
+set(SRC src/Score.cpp)
 set(COMPILER_FLAGS -Wall -Wextra -Werror -Wpedantic -Wconversion -O0 -g)
 
 add_library(${PROJECT_NAME}-lib STATIC ${SRC})

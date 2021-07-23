@@ -1,53 +1,35 @@
 #include <array>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include "../src/Bowls.hpp"
+#include "../src/Score.hpp"
 #include "catch.hpp"
 
-SCENARIO("Bowls::calculateResult should calculate result from string with partial results", "[Bowls][Result]") {
-    Bowls bowls;
+SCENARIO("Final score check", "[Score][Bowls]") {
+    using CorrectArray = std::array<std::pair<std::array<std::pair<uint8_t, uint8_t>, 11>, uint16_t>, 9>;
+    CorrectArray arr1{{
+        {{{{10, 0}, {10, 0}, {10, 0}, {10, 0}, {10, 0}, {10, 0}, {10, 0}, {10, 0}, {10, 0}, {10, 0}, {10, 10}}}, 300},
+        {{{{9, 0}, {9, 0}, {9, 0}, {9, 0}, {9, 0}, {9, 0}, {9, 0}, {9, 0}, {9, 0}, {9, 0}, {0, 0}}}, 90},
+        {{{{5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 0}}}, 150},
+        {{{{10, 0}, {7, 3}, {9, 0}, {10, 0}, {0, 8}, {8, 2}, {0, 6}, {10, 0}, {10, 0}, {10, 0}, {8, 1}}}, 167},
+        {{{{8, 0}, {7, 0}, {5, 3}, {9, 1}, {9, 1}, {10, 0}, {8, 0}, {5, 1}, {3, 7}, {9, 0}, {0, 0}}}, 122},
+        {{{{8, 2}, {9, 0}, {4, 4}, {7, 2}, {9, 0}, {10, 0}, {10, 0}, {8, 0}, {3, 5}, {9, 1}, {7, 0}}}, 133},
+        {{{{8, 2}, {5, 4}, {9, 0}, {10, 0}, {10, 0}, {5, 5}, {5, 3}, {6, 3}, {9, 1}, {9, 1}, {10, 0}}}, 149},
+        {{{{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}}}, 0},
+        {{{{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 5}, {0, 0}}}, 5},
+    }};
 
-    // An array of valid arguments and correct results
-    std::array<std::pair<std::string, size_t>, 9> arr1{{{"X|X|X|X|X|X|X|X|X|X||XX", 300},
-                                                        {"9-|9-|9-|9-|9-|9-|9-|9-|9-|9-||", 90},
-                                                        {"5/|5/|5/|5/|5/|5/|5/|5/|5/|5/||5", 150},
-                                                        {"X|7/|9-|X|-8|8/|-6|X|X|X||81", 167},
-                                                        {"8-|7-|53|9/|9/|X|8-|51|3/|9-||", 122},
-                                                        {"8/|9-|44|72|9-|X|X|8-|35|9/||7", 133},
-                                                        {"8/|54|9-|X|X|5/|53|63|9/|9/||X", 149},
-                                                        {"--|--|--|--|--|--|--|--|--|--||", 0},
-                                                        {"--|--|--|--|--|--|--|--|--|-5||", 5}}};
-
-    for (size_t i = 0; i < arr1.size(); ++i) {
-        GIVEN(arr1[i].first) {
-            WHEN("Final result is calculated") {
-                size_t result = bowls.calculateResult(arr1[i].first);
-                THEN("Result should match " + std::to_string(arr1[i].second)) {
-                    REQUIRE(result == arr1[i].second);
-                }
-            }
+    for (uint8_t testCaseNo = 0; testCaseNo < arr1.size(); ++testCaseNo) {
+        Score scores;
+        for (uint8_t frame = 0; frame < arr1[testCaseNo].first.size(); ++frame) {
+            scores.addResult(arr1[testCaseNo].first[frame].first);
+            scores.addResult(arr1[testCaseNo].first[frame].second);
         }
-    }
-
-    // An array of invalid arguments
-    std::array<std::string, 11> arr2{{{"X|X|X|X|X|X|Q|X|X|X||XX"},
-                                      {"9-|9-|9-|9|9-|9-|9-|9-|9-|9-||"},
-                                      {"5/|5/|5/|5/|5/|5/|5/|5/|5/|5/|5"},
-                                      {"|7/|9-|X|-8|8/|-6|X|X|X||81"},
-                                      {"8-|7-|53|9/|9/|X|8-|51|3/|9-||XX"},
-                                      {"8/|9-|44|72|93|X|X|8-|35|9/||7"},
-                                      {"8/|54|9-|X|X|5/|53|63|9/|9/||"},
-                                      {"8/|54|9-|X|X|5/53|63|9/|9/||"},
-                                      {"--|--|--|--|--|--|--|--|--|--||X"},
-                                      {"--|-A|--|--|--|--|--|--|--|-5||"},
-                                      {"DUPA"}}};
-
-    for (size_t i = 0; i < arr2.size(); ++i) {
-        GIVEN(arr2[i]) {
-            WHEN("Final result is calculated and invalid argument is passed") {
-                THEN("The method should throw an exception") {
-                    REQUIRE_THROWS_AS(bowls.calculateResult(arr2[i]), std::invalid_argument);
+        GIVEN(scores.resultsToString()) {
+            WHEN("Score class is filled with correct arguments") {
+                THEN("Final score should be " + std::to_string(arr1[testCaseNo].second)) {
+                    CHECK(scores.getFinalScore() == arr1[testCaseNo].second);
                 }
             }
         }
