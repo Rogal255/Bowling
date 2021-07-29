@@ -113,12 +113,12 @@ SCENARIO("Score check - partial results", "[geScore][Score]") {
     }};
 
     for (uint8_t testCaseNo = 0; testCaseNo < arr1.size(); ++testCaseNo) {
-        GIVEN("Results with score " + std::to_string(arr1[testCaseNo].second)) {
-            Score scores;
-            WHEN("Adding partial results with score " + std::to_string(arr1[testCaseNo].second)) {
-                for (const auto arg : arr1[testCaseNo].first) {
-                    scores.addResult(arg);
-                }
+        Score scores;
+        for (const auto arg : arr1[testCaseNo].first) {
+            scores.addResult(arg);
+        }
+        GIVEN(scores.resultsToString()) {
+            WHEN("Partial throw results are added") {
                 THEN("The result should be " + std::to_string(arr1[testCaseNo].second)) {
                     REQUIRE(scores.getScore() == arr1[testCaseNo].second);
                 }
